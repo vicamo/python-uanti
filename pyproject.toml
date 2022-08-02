@@ -1,0 +1,40 @@
+[build-system]
+requires = [
+    "setuptools >= 61.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uanti"
+authors = [
+    { name="You-Sheng Yang", email="vicamo@gmail.com" },
+]
+description = "Yet another python library for Gerrit service."
+readme = "README.rst"
+license = { file="LICENSE" }
+requires-python = ">= 3.7"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+keywords = [
+    "gerrit",
+    "uanti",
+]
+dynamic = [
+    "version",
+]
+
+[project.urls]
+Homepage = "https://github.com/vicamo/python-uanti"
+Source = "https://github.com/vicamo/python-uanti"
+Tracker = "https://github.com/vicamo/python-uanti/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "uanti.__version__" }
