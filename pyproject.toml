@@ -38,3 +38,7 @@ Tracker = "https://github.com/vicamo/python-uanti/issues"
 
 [tool.setuptools.dynamic]
 version = { attr = "uanti.__version__" }
+
+[tool.black]
+line-length = 79
+skip-string-normalization = true
