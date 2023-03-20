@@ -13,6 +13,9 @@ description = "Yet another python library for Gerrit service."
 readme = "README.rst"
 license = { file="LICENSE" }
 requires-python = ">= 3.7"
+dependencies = [
+    "lazr.restfulclient>=0.14.2",
+]
 classifiers = [
     "Development Status :: 1 - Planning",
     "Environment :: Console",
@@ -38,6 +41,9 @@ Tracker = "https://github.com/vicamo/python-uanti/issues"
 
 [tool.setuptools.dynamic]
 version = { attr = "uanti.__version__" }
+
+[tool.setuptools.package-data]
+uanti = ["gerrit.wadl"]
 
 [tool.black]
 line-length = 79
