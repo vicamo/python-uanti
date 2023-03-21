@@ -14,8 +14,4 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
-"""uanti top-level package."""
-
-__app_name__ = "uanti"
-__title__ = "python-uanti"
-__version__ = "0.0.1"
+"""uanti.restful package."""
