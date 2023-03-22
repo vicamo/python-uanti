@@ -161,6 +161,9 @@ class RestfulClient:
 
         return (post_data, None, "application/json")
 
+    def _load_json(self, result: requests.Response) -> Dict[str, Any]:
+        return result.json()
+
     def http_request(
         self,
         verb: str,
@@ -285,7 +288,7 @@ class RestfulClient:
 
             error_message = result.content
             try:
-                error_json = result.json()
+                error_json = self._load_json(result)
                 for k in ("message", "error"):
                     if k in error_json:
                         error_message = error_json[k]
@@ -342,7 +345,7 @@ class RestfulClient:
             and not raw
         ):
             try:
-                json_result = result.json()
+                json_result = self._load_json(result)
                 if TYPE_CHECKING:
                     assert isinstance(json_result, dict)
                 return json_result
@@ -395,7 +398,7 @@ class RestfulClient:
         )
         try:
             if result.headers.get("Content-Type", None) == "application/json":
-                json_result = result.json()
+                json_result = self._load_json(result)
                 if TYPE_CHECKING:
                     assert isinstance(json_result, dict)
                 return json_result
@@ -445,7 +448,7 @@ class RestfulClient:
             **kwargs,
         )
         try:
-            json_result = result.json()
+            json_result = self._load_json(result)
             if TYPE_CHECKING:
                 assert isinstance(json_result, dict)
             return json_result
@@ -494,7 +497,7 @@ class RestfulClient:
 
         result = self.http_request("get", url, query_data=query_data, **kwargs)
         try:
-            return result.json()
+            return self._load_json(result)
         except Exception as e:
             raise exc.RestfulParsingError(
                 error_message="Failed to parse the server message"
