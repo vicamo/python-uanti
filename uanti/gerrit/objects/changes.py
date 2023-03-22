@@ -20,7 +20,7 @@ from uanti.restful.mixins import ListMixin
 
 __all__ = [
     "Change",
-    "ChangesManager",
+    "ChangesRestfulManager",
 ]
 
 
@@ -28,6 +28,6 @@ class Change(RestfulObject):
     pass
 
 
-class ChangesManager(ListMixin, RestfulManager):
+class ChangesRestfulManager(ListMixin, RestfulManager):
     _path = "/changes/"
     _obj_cls = Change
