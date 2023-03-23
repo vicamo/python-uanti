@@ -35,6 +35,7 @@ __all__ = [
     "CreateMixin",
     "DeleteMixin",
     "GetMixin",
+    "GetWithoutIdMixin",
     "ListMixin",
 ]
 
@@ -147,6 +148,39 @@ class GetMixin(base.RestfulManager):
         server_data = self._client.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
+        return self._obj_cls(self, server_data)
+
+
+class GetWithoutIdMixin(base.RestfulManager):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RestfulObject]]
+    _optional_get_attrs: Tuple[str, ...] = ()
+    _parent: Optional[base.RestfulObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    _client: client.RestfulClient
+
+    @exc.on_http_error(exc.RestfulGetError)
+    def get(self, **kwargs: Any) -> base.RestfulObject:
+        """Retrieve a single object.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The generated RestfulObject
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulGetError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert self.path is not None
+        server_data = self._client.http_get(self.path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
