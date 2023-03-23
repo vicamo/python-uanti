@@ -62,6 +62,8 @@ class Gerrit(RestfulClient):
                 auth = HTTPBasicAuthFromNetrc(url)
             except ValueError:
                 pass
+        if auth:
+            url = url.rstrip("/") + "/a"
 
         super().__init__(
             url,
