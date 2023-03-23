@@ -231,7 +231,7 @@ class RestfulClient:
         json, data, content_type = self._prepare_send_data(
             files, post_data, raw
         )
-        headers["Content-type"] = content_type
+        headers["Content-Type"] = content_type
 
         cur_retries = 0
         while True:
@@ -340,7 +340,7 @@ class RestfulClient:
         )
 
         if (
-            result.headers["Content-Type"] == "application/json"
+            result.headers["Content-Type"].split(';')[0] == "application/json"
             and not streamed
             and not raw
         ):
@@ -397,7 +397,10 @@ class RestfulClient:
             **kwargs,
         )
         try:
-            if result.headers.get("Content-Type", None) == "application/json":
+            if (
+                result.headers["Content-Type"].split(';')[0]
+                == "application/json"
+            ):
                 json_result = self._load_json(result)
                 if TYPE_CHECKING:
                     assert isinstance(json_result, dict)
