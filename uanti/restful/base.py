@@ -228,6 +228,55 @@ class RestfulObject:
         return repr_val
 
 
+class RestfulObjectList:
+    """Generator object representing a list of RestfulObject's.
+
+    This generator serves as a base class to support pagination mechanism when
+    fetching data
+
+    Note: you should not instantiate such objects, they are returned by calls
+    to RestfulManager.list()
+
+    Args:
+        manager: Manager to attach to the created objects
+        obj_cls: Type of objects to create from the json data
+        _list: A list object
+    """
+
+    def __init__(
+        self,
+        manager: "RestfulManager",
+        obj_cls: Type[RestfulObject],
+        _list: list,
+    ) -> None:
+        """Creates an objects list from a list.
+
+        You should not create objects of this type, but use managers list()
+        methods instead.
+
+        Args:
+            manager: the RestfulManager to attach to the objects
+            obj_cls: the class of the created objects
+            _list: the list holding the data
+        """
+        self._manager = manager
+        self._obj_cls = obj_cls
+        self._list = _list
+
+    def __iter__(self) -> "RestfulObjectList":
+        return self
+
+    def __len__(self) -> int:
+        return len(self._list)
+
+    def __next__(self) -> RestfulObject:
+        return self.next()
+
+    def next(self) -> RestfulObject:
+        data = self._list.next()
+        return self._obj_cls(self._manager, data, created_from_list=True)
+
+
 class RestfulManager:
     """Base class for CRUD operations on objects.
 
