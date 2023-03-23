@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any, Dict
+
 from uanti.restful.base import RestfulObject, RestfulManager
 from uanti.restful.mixins import CreateMixin, ListMixin
 from uanti.restful.types import RequiredOptional
@@ -26,7 +28,16 @@ __all__ = [
 
 
 class Change(RestfulObject):
-    pass
+    def __init__(
+        self,
+        manager: "RestfulManager",
+        attrs: Dict[str, Any],
+    ) -> None:
+        # Remove additional mark from server query changes result
+        if "_more_changes" in attrs:
+            attrs.pop("_more_changes")
+
+        super().__init__(manager, attrs)
 
 
 class ChangesRestfulManager(CreateMixin, ListMixin, RestfulManager):
