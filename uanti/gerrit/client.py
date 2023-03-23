@@ -77,6 +77,7 @@ class Gerrit(RestfulClient):
 
         self._headers["Accept"] = "application/json"
 
+        self.access = objects.AccessRestfulManager(self)
         self.accounts = objects.AccountsRestfulManager(self)
         self.changes = objects.ChangesRestfulManager(self)
         self.documentation = objects.DocumentationRestfulManager(self)
