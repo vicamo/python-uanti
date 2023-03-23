@@ -23,7 +23,6 @@ from typing import Any, Dict, Iterable, Optional, Type, TYPE_CHECKING, Union
 import copy
 import json
 import pprint
-import textwrap
 
 from .client import RestfulClient
 from .types import RequiredOptional
@@ -53,7 +52,6 @@ class RestfulObject:
 
     _id_attr: Optional[str] = "id"
     _attrs: Dict[str, Any]
-    _created_from_list: bool  # Indicates if object was created from a list()
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _repr_attr: Optional[str] = None
@@ -64,8 +62,6 @@ class RestfulObject:
         self,
         manager: "RestfulManager",
         attrs: Dict[str, Any],
-        *,
-        created_from_list: bool = False,
     ) -> None:
         if not isinstance(attrs, dict):
             raise exc.RestfulParsingError(
@@ -79,7 +75,6 @@ class RestfulObject:
                 "_attrs": attrs,
                 "_updated_attrs": {},
                 "_module": importlib.import_module(self.__module__),
-                "_created_from_list": created_from_list,
             }
         )
         self.__dict__["_parent_attrs"] = self._manager.parent_attrs
@@ -111,13 +106,6 @@ class RestfulObject:
             return self.__dict__["_parent_attrs"][name]
 
         message = f"{type(self).__name__!r} object has no attribute {name!r}"
-        if self._created_from_list:
-            message = f"{message}\n\n" + textwrap.fill(
-                f"{self.__class__!r} was created via a list() call and "
-                f"only a subset of the data may be present. To ensure "
-                f"all data is present get the object using a "
-                f"get(object.id) call. For more details, see:"
-            )
         raise AttributeError(message)
 
     def __setattr__(self, name: str, value: Any) -> None:
