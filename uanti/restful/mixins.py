@@ -33,6 +33,7 @@ from uanti.restful import exceptions as exc
 
 __all__ = [
     "CreateMixin",
+    "DeleteMixin",
     "GetMixin",
     "ListMixin",
 ]
@@ -79,6 +80,39 @@ class CreateMixin(base.RestfulManager):
             assert not isinstance(obj, requests.Response)
             assert self._obj_cls is not None
         return self._obj_cls(self, obj)
+
+
+class DeleteMixin(base.RestfulManager):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RestfulObject]]
+    _parent: Optional[base.RestfulObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    _client: client.RestfulClient
+
+    @exc.on_http_error(exc.RestfulDeleteError)
+    def delete(
+        self, id: Optional[Union[str, int]] = None, **kwargs: Any
+    ) -> None:
+        """Delete an object on the server.
+
+        Args:
+            id: ID of the object to delete
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulDeleteError: If the server cannot perform the request
+        """
+        if id is None:
+            path = self.path
+        else:
+            path = f"{self.path.rstrip('/')}/{utils.EncodedId(id)}"
+
+        if TYPE_CHECKING:
+            assert path is not None
+        self._client.http_delete(path, **kwargs)
 
 
 class GetMixin(base.RestfulManager):
