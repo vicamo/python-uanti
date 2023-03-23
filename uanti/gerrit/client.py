@@ -75,6 +75,8 @@ class Gerrit(RestfulClient):
             session,
         )
 
+        self._headers["Accept"] = "application/json"
+
         self.changes = objects.ChangesRestfulManager(self)
 
     def _load_json(self, response: requests.Response) -> Dict[str, Any]:
