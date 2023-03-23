@@ -79,6 +79,7 @@ class Gerrit(RestfulClient):
 
         self.accounts = objects.AccountsRestfulManager(self)
         self.changes = objects.ChangesRestfulManager(self)
+        self.groups = objects.GroupsRestfulManager(self)
 
     def _load_json(self, response: requests.Response) -> Dict[str, Any]:
         """Strip off Gerrit's magic prefix and decode a response.
