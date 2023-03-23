@@ -68,7 +68,7 @@ class GetMixin(base.RestfulManager):
         """
         if isinstance(id, str):
             id = utils.EncodedId(id)
-        path = f"{self._path}/{id}"
+        path = f"{self.path}/{id}"
         if TYPE_CHECKING:
             assert self._obj_cls is not None
         if lazy is True:
@@ -106,7 +106,7 @@ class ListMixin(base.RestfulManager):
         """
 
         # Allow to overwrite the path, handy for custom listings
-        path = kwargs.pop("path", self._path)
+        path = kwargs.pop("path", self.path)
 
         if TYPE_CHECKING:
             assert self._obj_cls is not None
