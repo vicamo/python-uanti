@@ -107,7 +107,7 @@ class GetMixin(base.RestfulManager):
         """
         if isinstance(id, str):
             id = utils.EncodedId(id)
-        path = f"{self.path}/{id}"
+        path = f"{self.path.rstrip('/')}/{id}"
         if TYPE_CHECKING:
             assert self._obj_cls is not None
         server_data = self._client.http_get(path, **kwargs)
