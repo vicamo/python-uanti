@@ -15,7 +15,8 @@
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
 from uanti.restful.base import RestfulObject, RestfulManager
-from uanti.restful.mixins import ListMixin
+from uanti.restful.mixins import CreateMixin, ListMixin
+from uanti.restful.types import RequiredOptional
 
 
 __all__ = [
@@ -28,6 +29,27 @@ class Change(RestfulObject):
     pass
 
 
-class ChangesRestfulManager(ListMixin, RestfulManager):
+class ChangesRestfulManager(CreateMixin, ListMixin, RestfulManager):
     _path = "/changes/"
     _obj_cls = Change
+    _create_attrs = RequiredOptional(
+        required=(
+            "project",
+            "branch",
+            "subject",
+        ),
+        optional=(
+            "topic",
+            "status",
+            "is_private",
+            "work_in_progress",
+            "base_change",
+            "base_commit",
+            "new_branch",
+            "validation_options",
+            "merge",
+            "author",
+            "notify",
+            "notify_details",
+        ),
+    )
