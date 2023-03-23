@@ -79,6 +79,7 @@ class Gerrit(RestfulClient):
 
         self.accounts = objects.AccountsRestfulManager(self)
         self.changes = objects.ChangesRestfulManager(self)
+        self.documentation = objects.DocumentationRestfulManager(self)
         self.groups = objects.GroupsRestfulManager(self)
         self.plugins = objects.PluginsRestfulManager(self)
 

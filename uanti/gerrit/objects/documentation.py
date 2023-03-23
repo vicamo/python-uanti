@@ -14,10 +14,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
-from .accounts import *
-from .changes import *
-from .documentation import *
-from .groups import *
-from .plugins import *
+from uanti.restful.base import RestfulObject, RestfulManager
+from uanti.restful.mixins import ListMixin
 
-__all__ = [name for name in dir() if not name.startswith("_")]
+
+__all__ = [
+    # Documentation Search Endpoints -> Search Documentation
+    "DocResult",
+    "DocumentationRestfulManager",
+]
+
+
+class DocResult(RestfulObject):
+    _id_attr = None
+
+
+class DocumentationRestfulManager(ListMixin, RestfulManager):
+    _path = "/Documentation/"
+    _obj_cls = DocResult
