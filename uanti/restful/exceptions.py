@@ -34,6 +34,7 @@ __all__ = [
     "RestfulRedirectError",
     # operation errors
     "RestfulOperationError",
+    "RestfulCreateError",
     "RestfulGetError",
     "RestfulListError",
     # misc
@@ -88,6 +89,10 @@ class RestfulRedirectError(RestfulError):
 
 
 class RestfulOperationError(RestfulError):
+    pass
+
+
+class RestfulCreateError(RestfulOperationError):
     pass
 
 

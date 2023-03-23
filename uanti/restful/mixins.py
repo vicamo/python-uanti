@@ -32,9 +32,53 @@ from uanti.restful import base, client, utils
 from uanti.restful import exceptions as exc
 
 __all__ = [
+    "CreateMixin",
     "GetMixin",
     "ListMixin",
 ]
+
+
+class CreateMixin(base.RestfulManager):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RestfulObject]]
+    _parent: Optional[base.RestfulObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    _client: client.RestfulClient
+
+    @exc.on_http_error(exc.RestfulCreateError)
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> base.RestfulObject:
+        """Create a new object.
+
+        Args:
+            data: parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            A new instance of the managed object class built with
+                the data sent by the server
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulCreateError: If the server cannot perform the request
+        """
+        if data is None:
+            data = {}
+
+        self._create_attrs.validate_attrs(data=data)
+
+        # Handle specific URL for creation
+        path = kwargs.pop("path", self.path)
+
+        obj = self._client.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(obj, requests.Response)
+            assert self._obj_cls is not None
+        return self._obj_cls(self, obj)
 
 
 class GetMixin(base.RestfulManager):
