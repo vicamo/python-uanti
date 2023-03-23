@@ -17,7 +17,7 @@
 from typing import Any, Dict
 
 from uanti.restful.base import RestfulObject, RestfulManager
-from uanti.restful.mixins import CreateMixin, GetMixin, ListMixin
+from uanti.restful.mixins import CreateMixin, DeleteMixin, GetMixin, ListMixin
 from uanti.restful.types import RequiredOptional
 
 
@@ -40,7 +40,9 @@ class Change(RestfulObject):
         super().__init__(manager, attrs)
 
 
-class ChangesRestfulManager(CreateMixin, GetMixin, ListMixin, RestfulManager):
+class ChangesRestfulManager(
+    CreateMixin, DeleteMixin, GetMixin, ListMixin, RestfulManager
+):
     _path = "/changes/"
     _obj_cls = Change
     _create_attrs = RequiredOptional(
