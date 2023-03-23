@@ -14,22 +14,89 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import urllib.parse
 
 from uanti.restful.base import RestfulObject, RestfulManager
-from uanti.restful.mixins import CreateMixin, DeleteMixin, GetMixin, ListMixin
+from uanti.restful.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    GetMixin,
+    GetWithoutIdMixin,
+    ListMixin,
+)
 from uanti.restful.types import RequiredOptional
 
 
 __all__ = [
+    # Change Endpoints -> Get Meta Diff
+    "ChangesMetaDiff",
+    "ChangesMetaDiffRestfulManager",
+    # Change Endpoints -> Create, Delete, Get, Query Change
     "Change",
     "ChangesRestfulManager",
 ]
 
 
+class ChangesMetaDiff(RestfulObject):
+    _id_attr: None
+
+    def __init__(
+        self,
+        manager: "RestfulManager",
+        attrs: Dict[str, Any],
+    ) -> None:
+        super().__init__(manager, attrs)
+
+        self.__dict__["_attrs"]["old_change_info"] = Change(
+            self._manager._client.changes,
+            self.__dict__["_attrs"]["old_change_info"],
+        )
+        self.__dict__["_attrs"]["new_change_info"] = Change(
+            self._manager._client.changes,
+            self.__dict__["_attrs"]["new_change_info"],
+        )
+
+
+class ChangesMetaDiffRestfulManager(GetWithoutIdMixin, RestfulManager):
+    _path = "/changes/{change_id}/meta_diff"
+    _obj_cls = ChangesMetaDiff
+    _from_parent_attrs = {"change_id": "id"}
+
+    def get(
+        self,
+        meta: Optional[str] = None,
+        old: Optional[str] = None,
+    ) -> RestfulObject:
+        """Retrieves the difference between two historical states of a change.
+
+        Args:
+            meta: SHA-1 string of a latter revision. If not provided, the
+                current state of the change is used.
+            old: SHA-1 string of a former revision. If not provided, the parent
+                of the ``meta`` SHA-1 is used.
+
+        Returns:
+            The generated RestfulObject
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulGetError: If the server cannot perform the request
+        """
+        data = {}
+
+        if meta:
+            data["meta"] = meta
+        if old:
+            data["old"] = old
+
+        return super().get(**data)
+
+
 class Change(RestfulObject):
+    meta_diff: ChangesMetaDiffRestfulManager
+
     def __init__(
         self,
         manager: "RestfulManager",
