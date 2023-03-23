@@ -14,9 +14,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with uanti. If not, see <http://www.gnu.org/licenses/>.
 
-from .accounts import *
-from .changes import *
-from .groups import *
-from .plugins import *
+from uanti.restful.base import RestfulObject, RestfulManager
+from uanti.restful.mixins import ListMixin
 
-__all__ = [name for name in dir() if not name.startswith("_")]
+
+__all__ = [
+    # Plugin Endpoints -> List Plugins
+    "Plugin",
+    "PluginsRestfulManager",
+]
+
+
+class Plugin(RestfulObject):
+    pass
+
+
+class PluginsRestfulManager(ListMixin, RestfulManager):
+    _path = "/plugins/"
+    _obj_cls = Plugin
