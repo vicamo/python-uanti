@@ -159,6 +159,9 @@ class RestfulClient:
         if raw and post_data:
             return (None, post_data, "application/octet-stream")
 
+        if post_data is None:
+            post_data = {}
+
         return (post_data, None, "application/json")
 
     def _load_json(self, result: requests.Response) -> Dict[str, Any]:
