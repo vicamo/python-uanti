@@ -16,6 +16,8 @@
 
 from typing import Any, Dict
 
+import urllib.parse
+
 from uanti.restful.base import RestfulObject, RestfulManager
 from uanti.restful.mixins import CreateMixin, DeleteMixin, GetMixin, ListMixin
 from uanti.restful.types import RequiredOptional
@@ -33,6 +35,8 @@ class Change(RestfulObject):
         manager: "RestfulManager",
         attrs: Dict[str, Any],
     ) -> None:
+        # id string returned from server is encoded, so decode it first
+        attrs["id"] = urllib.parse.unquote(attrs["id"])
         # Remove additional mark from server query changes result
         if "_more_changes" in attrs:
             attrs.pop("_more_changes")
