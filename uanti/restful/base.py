@@ -58,7 +58,6 @@ class RestfulObject:
     _parent_attrs: Dict[str, Any]
     _repr_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
-    _lazy: bool
     _manager: "RestfulManager"
 
     def __init__(
@@ -67,7 +66,6 @@ class RestfulObject:
         attrs: Dict[str, Any],
         *,
         created_from_list: bool = False,
-        lazy: bool = False,
     ) -> None:
         if not isinstance(attrs, dict):
             raise exc.RestfulParsingError(
@@ -82,7 +80,6 @@ class RestfulObject:
                 "_updated_attrs": {},
                 "_module": importlib.import_module(self.__module__),
                 "_created_from_list": created_from_list,
-                "_lazy": lazy,
             }
         )
         self.__dict__["_parent_attrs"] = self._manager.parent_attrs
@@ -120,12 +117,6 @@ class RestfulObject:
                 f"only a subset of the data may be present. To ensure "
                 f"all data is present get the object using a "
                 f"get(object.id) call. For more details, see:"
-            )
-        elif self._lazy:
-            message = f"{message}\n\n" + textwrap.fill(
-                f"If you tried to access object attributes returned from the "
-                f"server, note that {self.__class__!r} was created as a `lazy`"
-                f" object and was not initialized with any data."
             )
         raise AttributeError(message)
 
