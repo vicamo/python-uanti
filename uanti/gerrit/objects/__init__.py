@@ -19,5 +19,6 @@ from .changes import *
 from .documentation import *
 from .groups import *
 from .plugins import *
+from .projects import *
 
 __all__ = [name for name in dir() if not name.startswith("_")]
