@@ -195,10 +195,13 @@ class ListFromDictMixin(base.RestfulManager):
     _client: client.RestfulClient
 
     @exc.on_http_error(exc.RestfulListError)
-    def list(self, **kwargs: Any) -> List[base.RestfulObject]:
+    def list(
+        self, copy_id_attr: Optional[str] = None, **kwargs: Any
+    ) -> List[base.RestfulObject]:
         """Retrieve a list of objects.
 
         Args:
+            copy_id_attr: Attribute name to insert into per entry dictionary.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -217,6 +220,9 @@ class ListFromDictMixin(base.RestfulManager):
         obj = self._client.http_list(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(obj, requests.Response)
+        if copy_id_attr:
+            for k, v in obj.items():
+                v[copy_id_attr] = k
         return [self._obj_cls(self, v) for _, v in obj.items()]
 
 
