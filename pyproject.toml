@@ -40,6 +40,14 @@ Homepage = "https://github.com/vicamo/python-uanti"
 Source = "https://github.com/vicamo/python-uanti"
 Tracker = "https://github.com/vicamo/python-uanti/issues"
 
+[project.entry-points.console_scripts]
+uanti = "uanti.gerrit.cli:main"
+
+[project.optional-dependencies]
+argcomplete = [
+    "argcomplete ~= 3.0.0",
+]
+
 [tool.setuptools.dynamic]
 version = { attr = "uanti.__version__" }
 

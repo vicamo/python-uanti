@@ -16,6 +16,8 @@
 
 from typing import Any, Dict, Union
 
+import re
+
 import urllib.parse
 
 
@@ -62,3 +64,17 @@ class EncodedId(str):
         if isinstance(value, str):
             value = urllib.parse.quote(value, safe="")
         return super().__new__(cls, value)
+
+
+# This regex is based on:
+# https://github.com/jpvanhal/inflection/blob/master/inflection/__init__.py
+_camel_upperlower_regex = re.compile(r"([A-Z]+)([A-Z][a-z])")
+_camel_lowerupper_regex = re.compile(r"([a-z\d])([A-Z])")
+
+
+def to_dasherized_lowercase(name: str) -> str:
+    dasherized_uppercase = _camel_upperlower_regex.sub(r"\1-\2", name)
+    dasherized_lowercase = _camel_lowerupper_regex.sub(
+        r"\1-\2", dasherized_uppercase
+    )
+    return dasherized_lowercase.lower()
