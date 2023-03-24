@@ -36,6 +36,7 @@ __all__ = [
     "DeleteMixin",
     "GetMixin",
     "GetWithoutIdMixin",
+    "ListFromDictMixin",
     "ListMixin",
 ]
 
@@ -182,6 +183,41 @@ class GetWithoutIdMixin(base.RestfulManager):
             assert not isinstance(server_data, requests.Response)
             assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
+
+
+class ListFromDictMixin(base.RestfulManager):
+    _from_parent_attrs: Dict[str, Any]
+    _list_filters: Tuple[str, ...] = ()
+    _obj_cls: Optional[Type[base.RestfulObject]]
+    _parent: Optional[base.RestfulObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    _client: client.RestfulClient
+
+    @exc.on_http_error(exc.RestfulListError)
+    def list(self, **kwargs: Any) -> List[base.RestfulObject]:
+        """Retrieve a list of objects.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The list of objects
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulListError: If the server cannot perform the request
+        """
+
+        # Allow to overwrite the path, handy for custom listings
+        path = kwargs.pop("path", self.path)
+
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
+        obj = self._client.http_list(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(obj, requests.Response)
+        return [self._obj_cls(self, v) for _, v in obj.items()]
 
 
 class ListMixin(base.RestfulManager):
