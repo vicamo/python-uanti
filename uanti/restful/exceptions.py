@@ -38,6 +38,7 @@ __all__ = [
     "RestfulDeleteError",
     "RestfulGetError",
     "RestfulListError",
+    "RestfulUpdateError",
     # misc
     "on_http_error",
 ]
@@ -106,6 +107,10 @@ class RestfulGetError(RestfulOperationError):
 
 
 class RestfulListError(RestfulOperationError):
+    pass
+
+
+class RestfulUpdateError(RestfulOperationError):
     pass
 
 

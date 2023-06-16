@@ -17,6 +17,7 @@
 
 from typing import (
     Any,
+    Callable,
     Dict,
     List,
     Optional,
@@ -38,6 +39,7 @@ __all__ = [
     "GetWithoutIdMixin",
     "ListFromDictMixin",
     "ListMixin",
+    "UpdateMixin",
 ]
 
 
@@ -259,3 +261,67 @@ class ListMixin(base.RestfulManager):
         if TYPE_CHECKING:
             assert not isinstance(obj, list)
         return [self._obj_cls(self, item) for item in obj]
+
+
+class UpdateMixin(base.RestfulManager):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RestfulObject]]
+    _parent: Optional[base.RestfulObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    _update_uses_post: bool = False
+    _client: client.RestfulClient
+
+    def _get_update_method(
+        self,
+    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+        """Return the HTTP method to use.
+
+        Returns:
+            http_put (default) or http_post
+        """
+        if self._update_uses_post:
+            http_method = self._client.http_post
+        else:
+            http_method = self._client.http_put
+        return http_method
+
+    @exc.on_http_error(exc.RestfulUpdateError)
+    def update(
+        self,
+        id: Optional[Union[str, int]] = None,
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
+        """Update an object on the server.
+
+        Args:
+            id: ID of the object to update (can be None if not required)
+            new_data: the update data for the object
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The new object data (*not* a RestfulObject)
+
+        Raises:
+            RestfulAuthenticationError: If authentication is not correct
+            RestfulUpdateError: If the server cannot perform the request
+        """
+        new_data = new_data or {}
+
+        if id is None:
+            path = self.path
+        else:
+            path = f"{self.path}/{utils.EncodedId(id)}"
+
+        excludes = []
+        if self._obj_cls is not None and self._obj_cls._id_attr is not None:
+            excludes = [self._obj_cls._id_attr]
+        self._update_attrs.validate_attrs(data=new_data, excludes=excludes)
+
+        http_method = self._get_update_method()
+        result = http_method(path, post_data=new_data, files=files, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
